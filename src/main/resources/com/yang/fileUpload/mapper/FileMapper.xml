@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yang.fileUpload.mapper.FileMapper">
+    <insert id="createTable" parameterType="map">
+        <!-- 动态 SQL 语法 -->
+        CREATE TABLE ${tableName} (
+        <foreach collection="colDefinition" index="key" item="val" separator=",">
+            ${key} ${val}
+        </foreach>
+        )
+    </insert>
+    <insert id="loadData">
+        LOAD DATA LOCAL INFILE "${filePath}"
+        INTO TABLE ${tableName}
+        FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+        LINES TERMINATED BY '\n'
+        IGNORE 1 LINES
+    </insert>
+    <insert id="batchInsert">
+        INSERT INTO ${tableName}
+        VALUES
+        <foreach collection="rowData" item="row" separator=",">
+            <foreach collection="row" item="value" open="(" close=")" separator=",">
+                <choose>
+                    <when test="value == null or value == ''">
+                        NULL
+                    </when>
+                    <otherwise>
+                        #{value}
+                    </otherwise>
+                </choose>
+            </foreach>
+        </foreach>
+    </insert>
+    <delete id="deleteTable">
+        drop table if exists ${tableName}
+    </delete>
+    <!--  在 MySQL 中，fetchSize 是由 JDBC 驱动控制的一个参数
+            当设置 fetchSize = Integer.MIN_VALUE (即 -2147483648) 时
+                MySQL 的 JDBC 驱动会自动启用流式查询模式
+                查询的结果不会一次性加载到内存，而是随着结果集的迭代逐步加载-->
+    <select id="streamSelect" resultType="java.util.LinkedHashMap" parameterType="java.util.HashMap" fetchSize="-2147483648">
+        select
+        <foreach item="field" index="index" collection="fields" open="" separator="," close="">
+            ${field}
+        </foreach>
+        from ${tableName}
+    </select>
+    
+    <!--  根据表名查询列名信息  -->
+    <select id="getFiledList" resultType="java.lang.String">
+        SELECT COLUMN_NAME
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = "${tableName}"
+    </select>
+
+</mapper>
