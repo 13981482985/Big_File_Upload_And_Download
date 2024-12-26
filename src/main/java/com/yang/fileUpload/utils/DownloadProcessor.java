@@ -3,6 +3,7 @@ package com.yang.fileUpload.utils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -31,12 +32,16 @@ public class DownloadProcessor {
         this.response.addHeader("Content-Type", "application/form-data");
         this.response.addHeader("Content-Disposition", "attachment; filename="+fileName);
         this.response.setCharacterEncoding("UTF-8");
-        workbook = new SXSSFWorkbook(100);  // 设置保留的最大行数为100行
+        /**
+         * SXSSFWorkbook：支持流式写入（即逐行写入 Excel 文件），避免将整个数据集加载到内存中
+         * 设置保留的最大行数为100行
+         */
+        workbook = new SXSSFWorkbook(100);  //
         sheet = workbook.createSheet("Sheet1");  // 创建一个新的工作表
     }
 
     // 将 record 这一行数据写入到 xlsx 文件
-    public void processData(LinkedHashMap<String, Object> record) {
+    public void processData(LinkedHashMap<String, Object> record) throws IOException {
 
         // 如果是第一行，写入表头
         if (rowIndex == 0) {
@@ -63,9 +68,12 @@ public class DownloadProcessor {
                 cell.setCellValue("");  // 如果值为空，则设置为空字符串
             }
         }
+
+        // 在每次写入一定数量的行之后，调用 flushRows() 方法来将内存中的行数据刷新到磁盘，以释放内存
+        if (rowIndex % 100 == 0) {  // 每100行清理一次
+            ((SXSSFSheet) sheet).flushRows();
+        }
     }
-
-
     public void finalizeDownload() {
         try {
             // 将工作簿内容写入到响应输出流（确保一次性输出）
@@ -83,6 +91,4 @@ public class DownloadProcessor {
             }
         }
     }
-
-
 }

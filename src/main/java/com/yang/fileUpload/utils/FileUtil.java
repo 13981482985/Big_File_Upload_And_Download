@@ -48,7 +48,6 @@ public class FileUtil {
         while ((row = csvReader.readNext()) != null) {
             rows.add(row);
         }
-        csvReader.close();
         return rows;
     }
 

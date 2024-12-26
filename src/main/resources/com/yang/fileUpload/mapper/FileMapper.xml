@@ -34,6 +34,8 @@
             </foreach>
         </foreach>
     </insert>
+
+
     <delete id="deleteTable">
         drop table if exists ${tableName}
     </delete>

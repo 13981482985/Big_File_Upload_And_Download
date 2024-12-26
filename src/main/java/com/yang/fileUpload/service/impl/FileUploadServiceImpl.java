@@ -154,6 +154,7 @@ public class FileUploadServiceImpl  implements FileUploadService {
         }catch (Exception e){
             log.error("文件上传过程中发生错误，删除表：{}", tableName, e);
             fileMapper.deleteTable(tableName);
+        }finally {
         }
     }
 

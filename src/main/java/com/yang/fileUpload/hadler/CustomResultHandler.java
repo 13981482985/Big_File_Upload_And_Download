@@ -4,6 +4,7 @@ import com.yang.fileUpload.utils.DownloadProcessor;
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -21,6 +22,10 @@ public class CustomResultHandler implements ResultHandler {
         // 获取流式结果
         LinkedHashMap<String, Object> map = (LinkedHashMap)resultContext.getResultObject();
         // 处理流式结果
-        downloadProcessor.processData(map);
+        try {
+            downloadProcessor.processData(map);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

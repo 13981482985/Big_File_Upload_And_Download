@@ -15,13 +15,10 @@ import java.util.List;
 
 @Service
 public class FileDownloadServiceImpl implements FileDownloadService {
-
     @Autowired
     private  SqlSessionTemplate sqlSessionTemplate;
-
     @Autowired
     private FileMapper fileMapper;
-
     /**
      * stream读数据写文件方式
      * @param httpServletResponse
@@ -43,23 +40,4 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             ex.printStackTrace();
         }
     }
-
-
-
-    /**
-     * 传统下载方式
-     * @param httpServletResponse
-     * @throws IOException
-     */
-//    public void traditionDownload(HttpServletResponse httpServletResponse)
-//            throws IOException {
-//        AuthorsExample authorsExample = new AuthorsExample();
-//        authorsExample.createCriteria();
-//        List<Authors> authors = authorsMapper.selectByExample (authorsExample);
-//        DownloadProcessor downloadProcessor = new DownloadProcessor (httpServletResponse);
-//        authors.forEach (downloadProcessor::processData);
-//        httpServletResponse.getWriter().flush();
-//        httpServletResponse.getWriter().close();
-//    }
-
 }
