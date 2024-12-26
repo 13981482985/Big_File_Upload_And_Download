@@ -14,9 +14,9 @@ public class MyConfiguration {
                 Runtime.getRuntime().availableProcessors()*3,
                 1,
                 TimeUnit.MINUTES,
-                new LinkedBlockingQueue<>(),
+                new LinkedBlockingQueue<>(500),
                 Executors.defaultThreadFactory(),
-                new ThreadPoolExecutor.AbortPolicy()
+                new ThreadPoolExecutor.CallerRunsPolicy()  // 由调用线程执行任务，降低速度
         );
     }
 }
